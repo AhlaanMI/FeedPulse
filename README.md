@@ -1,193 +1,370 @@
-FeedPulse
+# FeedPulse — AI-Powered Product Feedback Platform
 
-AI-Powered Product Feedback Platform
+An intelligent feedback collection and analysis platform that uses Google Gemini AI to automatically categorize, prioritize, and summarize product feedback.
 
-How This Works
-• You will build a single full-stack web application from scratch over 5 days.
-• Push all your code to a public GitHub repository and submit the link.
-• We evaluate code quality, product thinking, and how you use AI features — not just if it runs.
-• Read every requirement carefully. Prioritise Must-Have features first.
+## Features
 
-The Project
-FeedPulse — AI-Powered Product Feedback Platform
-FeedPulse is a lightweight internal tool that lets teams collect product feedback and feature requests from users,
-then uses Google Gemini AI to automatically categorise, prioritise, and summarise them — giving product teams
-instant clarity on what to build next.
-Why this project?
-• It covers the full stack — a real frontend, a real API, a real database, and a real AI integration.
-• It is a product that teams actually need. This is not a to-do app.
-• It tests your ability to think like an engineer and a product person at the same time.
-• The AI integration (Gemini) adds genuine complexity without being overwhelming.
+### Core Features (Implemented)
+- ✅ **Public Feedback Submission Form** - Clean interface for users to submit feedback without authentication
+- ✅ **AI-Powered Analysis** - Google Gemini automatically analyzes feedback for category, sentiment, priority, and summary
+- ✅ **Admin Dashboard** - Protected interface for reviewing and managing all feedback
+- ✅ **Feedback Filtering & Sorting** - Filter by category, status, priority; sort by date or priority
+- ✅ **Status Management** - Update feedback status (New → In Review → Resolved)
+- ✅ **Rate Limiting** - Prevent spam by limiting submissions to 5 per IP per hour
+- ✅ **Statistics Dashboard** - View total feedback, open items, average priority, and most common tags
+- ✅ **Real-time AI Processing** - Asynchronous AI analysis for instant feedback submission
 
-Suggested Tech Stack
-TypeScript is strongly preferred — use plain JavaScript only if you are not comfortable with TS.
-Technology Purpose
-Next.js 14+ Frontend — App Router, React Server Components, pages & UI
-Node.js + Express Backend API — REST endpoints, middleware, business logic
-Google AI Studio Free Gemini API — AI categorisation, summarisation & priority scoring
-MongoDB + Mongoose Database — store feedback, users, tags, and AI analysis results
-TypeScript Preferred for both frontend and backend. JS is acceptable if needed.
-Any CSS Framework Tailwind CSS, ShadCN, Chakra UI, MUI, or plain CSS — your choice
-Google AI Studio — Free Tier: Sign up at aistudio.google.com and generate a free API key (no credit card required). Use the
-gemini-1.5-flash model — it is free, fast, and more than capable for this task.
+## Tech Stack
 
-Suggested Project Structure
-You are free to organise your project however it makes sense to you. The structure below is a guide, not a rule.
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety and better developer experience
+- **Tailwind CSS** - Modern utility-first CSS framework
+- **Axios** - HTTP client for API communication
+
+### Backend
+- **Node.js + Express** - Lightweight, fast API server
+- **TypeScript** - Type-safe backend code
+- **MongoDB + Mongoose** - NoSQL database with schema validation
+- **Google Generative AI SDK** - Gemini API integration
+- **JWT** - Secure authentication tokens
+- **bcryptjs** - Password hashing for security
+
+### Testing & DevOps
+- **Jest** - Unit and integration testing framework
+- **Supertest** - HTTP assertion library for API testing
+- **Docker** - Containerization of frontend and backend
+- **Docker Compose** - Orchestration of all services
+
+## Project Structure
+
+```
 feedpulse/
-├── frontend/ ← Next.js app
-│ ├── app/
-│ │ ├── page.tsx (Landing / Submit Feedback)
-│ │ ├── dashboard/page.tsx (Admin Dashboard)
-│ │ └── api/ (Next.js API routes — optional)
-│ └── components/
+├── frontend/                 # Next.js frontend application
+│   ├── app/
+│   │   ├── page.tsx         # Public feedback submission page
+│   │   ├── dashboard/page.tsx # Admin dashboard
+│   │   ├── layout.tsx       # Root layout
+│   │   └── globals.css      # Global styles
+│   ├── components/
+│   │   └── FeedbackForm.tsx # Feedback form component
+│   ├── lib/
+│   │   └── api.ts          # API client with auth interceptors
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── tailwind.config.js
+│   └── Dockerfile
 │
-├── backend/ ← Node.js + Express API
-│ ├── src/
-│ │ ├── routes/
-│ │ ├── controllers/
-│ │ ├── models/ (Mongoose schemas)
-│ │ └── services/
-│ │ └── gemini.service.ts ← AI integration
-│ └── .env
+├── backend/                  # Express backend API
+│   ├── src/
+│   │   ├── index.ts         # Server entry point
+│   │   ├── models/
+│   │   │   ├── Feedback.ts  # Feedback schema
+│   │   │   └── User.ts      # User/Admin schema
+│   │   ├── controllers/
+│   │   │   ├── feedbackController.ts
+│   │   │   └── authController.ts
+│   │   ├── services/
+│   │   │   └── gemini.service.ts # AI integration
+│   │   ├── routes/
+│   │   │   ├── feedbackRoutes.ts
+│   │   │   └── authRoutes.ts
+│   │   ├── middleware/
+│   │   │   └── auth.ts      # JWT verification
+│   │   └── __tests__/       # Unit tests
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── jest.config.js
+│   └── Dockerfile
 │
-├── docker-compose.yml ← Bonus
-├── README.md ← Required
-└── .gitignore
+├── docker-compose.yml        # Service orchestration
+├── .gitignore
+└── README.md
+```
 
-Core Features to Build
-Build every Must Have feature. Nice to Have features improve your score. Reach features are extras that show
-initiative.
+## Getting Started
 
-Requirement 1 — Feedback Submission
-The public-facing form anyone can use to submit feedback.
-# Feature / Requirement Priority
-1.1 A clean public page where users can submit feedback without signing in Must Have
-1.2 Form fields: Title, Description (textarea), Category (Bug / Feature Request /
-Improvement / Other), Name (optional), Email (optional)
+### Prerequisites
+- Node.js 18+ and npm
+- MongoDB 5+ (for local development)
+- Google Gemini API key (get free at [aistudio.google.com](https://aistudio.google.com))
+- Docker & Docker Compose (optional, for containerized deployment)
 
-Must Have
-1.3 Client-side form validation — no empty titles, minimum 20 characters in description Must Have
-1.4 On submit, POST to your Node.js backend API and save to MongoDB Must Have
-1.5 Success and error states are shown to the user after submission Must Have
-1.6 Character counter on the description field Nice to Have
-1.7 Rate limiting — prevent the same IP from submitting more than 5 times per hour. Nice to Have
+### Local Development Setup
 
-Requirement 2 — AI Analysis with Gemini
-The heart of the product — automated intelligence on every submission.
-Gemini Integration Guide: When a new feedback submission is saved to MongoDB, call Gemini immediately (or via a queue). Send
-the title and description to Gemini and ask it to return a JSON object. Use a structured prompt: "Analyse this product feedback. Return
-ONLY valid JSON with these fields: category, sentiment, priority_score (1-10), summary, tags." Save the Gemini response fields back
-onto the feedback document in MongoDB.
-Gemini Response Schema (save all fields to MongoDB):
-{
-"category": "Feature Request", // Bug | Feature Request | Improvement | Other
-"sentiment": "Positive", // Positive | Neutral | Negative
-"priority_score": 8, // 1 (low) to 10 (critical)
-"summary": "User wants dark mode in the dashboard settings.",
-"tags": ["UI", "Settings", "Accessibility"]
-}
+#### 1. Clone the Repository
+```bash
+git clone <your-repo-url>
+cd feedpulse
+```
 
-# Feature / Requirement Priority
-2.1 Call the Gemini API when a new feedback item is submitted Must Have
-2.2 Store category, sentiment, priority_score, summary, and tags from Gemini onto the
-feedback document
+#### 2. Backend Setup
+```bash
+cd backend
+npm install
 
-Must Have
-2.3 Handle Gemini API errors gracefully — feedback should still be saved even if AI fails Must Have
-2.4 Show a badge on each feedback card indicating the AI-detected sentiment Must Have
-2.5 Generate a weekly/on-demand AI summary: 'Top 3 themes from the last 7 days of
-feedback.'
+# Create .env file
+cp .env.example .env
 
-Nice to Have
-2.6 Allow admin to manually re-trigger AI analysis on any submission Nice to Have
+# Edit .env and add your values:
+# GEMINI_API_KEY=your-api-key-here
+# JWT_SECRET=your-secret-key
+# MONGO_URI=mongodb://localhost:27017/feedpulse
 
-Requirement 3 — Admin Dashboard
-Protected view for managing and reviewing all feedback.
-# Feature / Requirement Priority
-3.1 Protected dashboard page — only accessible after logging in with a hardcoded
-admin email + password (no full auth system needed)
+# Start MongoDB locally (if not using Docker)
+mongod
 
-Must Have
+# Run the backend
+npm run dev
+```
 
-3.2 Table or card list of all feedback submissions with: title, category, sentiment badge,
-priority score, date
+The backend will start at `http://localhost:4000`
 
-Must Have
-3.3 Filter feedback by category (Bug / Feature Request / Improvement / Other) Must Have
-3.4 Filter feedback by status (New / In Review / Resolved) Must Have
-3.5 Admin can update the status of any feedback item (New → In Review → Resolved) Must Have
-3.6 Sort feedback by date, priority score, or sentiment Nice to Have
-3.7 Search feedback by keyword (searches title + summary) Nice to Have
-3.8 Stats bar at the top: total feedback, open items, average priority score, most
-common tag
+#### 3. Frontend Setup
+```bash
+cd frontend
+npm install
 
-Nice to Have
-3.9 Paginate results — show 10 items per page Nice to Have
+# Create .env.local file (optional, defaults to localhost)
+echo "NEXT_PUBLIC_API_URL=http://localhost:4000" > .env.local
 
-Requirement 4 — REST API (Node.js + Express)
-Clean, well-structured API that the frontend consumes.
-Required API Endpoints:
-POST /api/feedback → Submit new feedback
-GET /api/feedback → Get all feedback (admin, supports filters + pagination)
-GET /api/feedback/:id → Get single feedback item
-PATCH /api/feedback/:id → Update status (admin only)
-DELETE /api/feedback/:id → Delete feedback (admin only)
-GET /api/feedback/summary → Get AI-generated trend summary
-POST /api/auth/login → Admin login (returns a session token)
+# Run the frontend
+npm run dev
+```
 
+The frontend will start at `http://localhost:3000`
 
-# Feature / Requirement Priority
-4.1 All endpoints return consistent JSON: { success, data, error, message } Must Have
-4.2 Use Mongoose schemas with proper field types and validations Must Have
-4.3 Protect admin routes using a simple JWT or session token middleware Must Have
-4.4 Use environment variables for MongoDB URI, Gemini API Key, and JWT secret Must Have
-4.5 Input sanitisation — reject obviously bad input before saving to DB Must Have
-4.6 Return proper HTTP status codes (200, 201, 400, 401, 404, 500) Must Have
-4.7 Separate route files, controller files, and model files — do not put all code in one file. Must Have
+### Docker Deployment
 
-Requirement 5 — MongoDB Schema & Data Design
-Think about how you model the data.
-Minimum Required Schema — Feedback Collection:
-Feedback {
-title: String (required, max 120 chars)
-description: String (required, min 20 chars)
-category: Enum (Bug | Feature Request | Improvement | Other)
-status: Enum (New | In Review | Resolved) default: New
-submitterName: String (optional)
-submitterEmail: String (optional, validate email format)
-// AI fields — populated after Gemini responds
-ai_category: String
-ai_sentiment: String (Positive | Neutral | Negative)
-ai_priority: Number (1–10)
-ai_summary: String
-ai_tags: [String]
-ai_processed: Boolean default: false
-createdAt: Date (auto)
-updatedAt: Date (auto)
-}
-# Feature / Requirement Priority
-5.1 Feedback schema matches the spec above with all required fields and types Must Have
-5.2 Add MongoDB indexes on: status, category, ai_priority, and createdAt for query
-performance
+Run the entire stack with a single command:
 
-Must Have
-5.3 Timestamps enabled (createdAt, updatedAt auto-managed) Must Have
-5.4 If adding auth for admin, create a separate User collection — do not store admin
-credentials in .env only.
+```bash
+# Set environment variables
+export GEMINI_API_KEY=your-api-key-here
+export JWT_SECRET=your-secret-key
 
-Requirement 6 — GitHub Repository & README
-How you present your work is part of the assessment.
-# Feature / Requirement Priority
-6.1 Push all code to a public GitHub repository Must Have
-6.2 README.md must include: project description, tech stack, how to run locally (step
-by step), environment variables needed, and screenshots
+# Start all services
+docker-compose up --build
+```
 
-Must Have
-6.3 .gitignore must include: node_modules, .env, build output folders Must Have
-6.4 Meaningful commit messages — not 'update' or 'fix'. Show your work history. Must Have
-6.5 At least 5 commits spread across the 3 days — not one giant commit at the end Must Have
-6.6 The README includes a short note on what you would build next if you had more
-time
+Once running:
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:4000
+- **MongoDB**: localhost:27017
 
-Nice to Have
-6.7 Use GitHub branches — develop on a feature branch and merge to main Nice to Have
+To stop and clean up:
+```bash
+docker-compose down -v
+```
+
+## Usage
+
+### Submit Feedback
+1. Visit **http://localhost:3000**
+2. Fill out the feedback form with:
+   - **Title** (5-120 characters)
+   - **Description** (minimum 20 characters)
+   - **Category** (Bug, Feature Request, Improvement, Other)
+   - **Name & Email** (optional)
+3. Click "Submit Feedback"
+4. The AI automatically analyzes your feedback and saves results
+
+### Admin Dashboard
+1. Visit **http://localhost:3000/dashboard**
+2. Log in with default credentials:
+   - **Email**: `admin@feedpulse.com`
+   - **Password**: `admin123456`
+3. View all feedback with:
+   - Filter by category or status
+   - Sort by date or priority
+   - Search by title or summary
+   - Update feedback status
+   - View AI-generated insights
+
+## API Endpoints
+
+### Public Endpoints
+- `POST /api/feedback` - Submit new feedback
+- `GET /api/feedback/stats` - Get dashboard statistics
+
+### Protected Endpoints (Require JWT Token)
+- `GET /api/feedback` - Get all feedback (with filters & pagination)
+- `GET /api/feedback/:id` - Get single feedback item
+- `PATCH /api/feedback/:id` - Update feedback status
+- `DELETE /api/feedback/:id` - Delete feedback
+- `GET /api/feedback/summary/generate` - Generate AI summary of feedback
+
+### Authentication Endpoints
+- `POST /api/auth/login` - Admin login (returns JWT token)
+
+## Running Tests
+
+```bash
+cd backend
+
+# Run all tests
+npm test
+
+# Watch mode for development
+npm run test:watch
+
+# Test coverage
+npm test -- --coverage
+```
+
+### Test Coverage
+- ✅ Feedback submission with validation
+- ✅ Rate limiting enforcement
+- ✅ Admin authentication
+- ✅ Protected route access control
+- ✅ Gemini API integration (mocked)
+- ✅ Error handling and edge cases
+
+## Environment Variables
+
+### Backend (.env)
+```
+PORT=4000
+MONGO_URI=mongodb://localhost:27017/feedpulse
+GEMINI_API_KEY=your-gemini-api-key
+JWT_SECRET=your-jwt-secret-key
+NODE_ENV=development
+```
+
+### Frontend (.env.local)
+```
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+### Docker (.env for docker-compose)
+```
+GEMINI_API_KEY=your-gemini-api-key
+JWT_SECRET=your-jwt-secret-key
+```
+
+## Key Implementation Details
+
+### 1. AI Integration (Gemini)
+- Uses `gemini-1.5-flash` model for fast, free feedback analysis
+- Asynchronous processing to keep API responsive
+- Graceful degradation - feedback is saved even if AI fails
+- Parses structured JSON responses for consistency
+
+### 2. Authentication & Authorization
+- JWT-based authentication for admin routes
+- Passwords hashed with bcryptjs (10 salt rounds)
+- Token expiration set to 24 hours
+- Middleware validates tokens on protected endpoints
+
+### 3. Rate Limiting
+- Per-IP rate limiting (5 submissions per hour)
+- In-memory store for simplicity (use Redis in production)
+- Returns 429 (Too Many Requests) status code when exceeded
+
+### 4. Database Schema
+- Comprehensive validation on Feedback model
+- Indexed fields for query performance (status, category, priority, createdAt)
+- Timestamps (createdAt, updatedAt) managed automatically
+- Separate User collection for admin credentials
+
+## Future Enhancements
+
+If given more time, the following features would be implemented:
+
+1. **Email Notifications**
+   - Notify submitters when their feedback status changes
+   - Weekly digest emails for admin team
+
+2. **Advanced Analytics**
+   - Trend analysis over time
+   - Sentiment distribution charts
+   - Category breakdown visualization
+   - User heat maps for frequently requested features
+
+3. **Team Collaboration**
+   - Multiple admin accounts with role-based access
+   - Comments and internal notes on feedback items
+   - Assignment of feedback to team members for action
+
+4. **Integration Capabilities**
+   - Slack integration for notifications
+   - Webhook support for external systems
+   - Direct integration with project management tools (Jira, Linear, etc.)
+
+5. **Performance Optimization**
+   - Redis caching for frequently accessed data
+   - Database query optimization and aggregation pipelines
+   - Frontend code splitting and lazy loading
+   - CDN integration for static assets
+
+6. **Enhanced Security**
+   - Rate limiting via Redis instead of in-memory
+   - reCAPTCHA integration for form submission
+   - API rate limiting with per-user quotas
+   - Encryption of sensitive feedback data
+
+7. **Mobile Support**
+   - Responsive mobile design improvements
+   - Mobile app (React Native or Flutter)
+   - Progressive Web App (PWA) capabilities
+
+8. **Batch Operations**
+   - Bulk status updates
+   - Bulk export to CSV
+   - Retrigger AI analysis on multiple items
+
+## Deployment
+
+### Heroku Deployment
+```bash
+# Create apps
+heroku create feedpulse-frontend
+heroku create feedpulse-backend
+
+# Set environment variables
+heroku config:set GEMINI_API_KEY=xxx --app feedpulse-backend
+
+# Deploy
+git push heroku main
+```
+
+### AWS Deployment
+- Frontend: AWS Amplify or CloudFront + S3
+- Backend: AWS EC2 or ECS
+- Database: AWS RDS for MongoDB or native MongoDB Atlas
+- AI API: Google Cloud (Gemini)
+
+## Troubleshooting
+
+### "MongoDB connection failed"
+- Ensure MongoDB is running: `mongod`
+- Check MONGO_URI is correct
+- For Docker: wait for MongoDB to be healthy before starting backend
+
+### "GEMINI_API_KEY not set"
+- AI analysis is optional; feedback still saves
+- Set the environment variable to enable AI features
+
+### "Cannot find module" errors
+- Run `npm install` in both frontend and backend
+- Clear node_modules: `rm -rf node_modules && npm install`
+
+### CORS errors in browser
+- Ensure backend is running on port 4000
+- Check NEXT_PUBLIC_API_URL matches backend URL
+- Verify CORS is enabled in Express
+
+## Contributing
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make changes and test
+3. Commit with meaningful message: `git commit -m "Add feature X"`
+4. Push and create a pull request
+
+## License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+## Support
+
+For issues or questions, please create an issue in the GitHub repository.
