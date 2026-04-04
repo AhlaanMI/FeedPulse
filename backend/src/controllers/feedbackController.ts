@@ -1,14 +1,14 @@
-import { Request, Response } from 'express';
-import { Feedback } from '../models/Feedback';
-import { analyzeWithGemini, generateSummary } from '../services/gemini.service';
-import { v4 as uuidv4 } from 'uuid';
+import { Request, Response } from "express";
+import { Feedback } from "../models/Feedback";
+import { analyzeWithGemini, generateSummary } from "../services/gemini.service";
+import { v4 as uuidv4 } from "uuid";
 
 // Utility to get client IP
 function getClientIp(req: Request): string {
   return (
-    (req.headers['x-forwarded-for'] as string)?.split(',')[0] ||
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
     (req.socket.remoteAddress as string) ||
-    ''
+    ""
   );
 }
 
@@ -34,15 +34,16 @@ function checkRateLimit(ip: string): boolean {
 
 export const submitFeedback = async (req: Request, res: Response) => {
   try {
-    const { title, description, category, submitterName, submitterEmail } = req.body;
+    const { title, description, category, submitterName, submitterEmail } =
+      req.body;
 
     // Validate inputs
     if (!title || !description) {
       return res.status(400).json({
         success: false,
         data: null,
-        error: 'VALIDATION_ERROR',
-        message: 'Title and description are required'
+        error: "VALIDATION_ERROR",
+        message: "Title and description are required",
       });
     }
 
@@ -50,8 +51,8 @@ export const submitFeedback = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         data: null,
-        error: 'VALIDATION_ERROR',
-        message: 'Title must be at least 5 characters'
+        error: "VALIDATION_ERROR",
+        message: "Title must be at least 5 characters",
       });
     }
 
@@ -59,8 +60,8 @@ export const submitFeedback = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         data: null,
-        error: 'VALIDATION_ERROR',
-        message: 'Description must be at least 20 characters'
+        error: "VALIDATION_ERROR",
+        message: "Description must be at least 20 characters",
       });
     }
 
@@ -70,8 +71,8 @@ export const submitFeedback = async (req: Request, res: Response) => {
       return res.status(429).json({
         success: false,
         data: null,
-        error: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many submissions from this IP. Maximum 5 per hour.'
+        error: "RATE_LIMIT_EXCEEDED",
+        message: "Too many submissions from this IP. Maximum 5 per hour.",
       });
     }
 
@@ -79,10 +80,10 @@ export const submitFeedback = async (req: Request, res: Response) => {
     const feedback = new Feedback({
       title: title.trim(),
       description: description.trim(),
-      category: category || 'Other',
+      category: category || "Other",
       submitterName: submitterName?.trim() || null,
       submitterEmail: submitterEmail?.trim() || null,
-      submitterIp: clientIp
+      submitterIp: clientIp,
     });
 
     await feedback.save();
@@ -100,21 +101,21 @@ export const submitFeedback = async (req: Request, res: Response) => {
           await feedback.save();
         }
       })
-      .catch(err => console.error('Background AI analysis failed:', err));
+      .catch((err) => console.error("Background AI analysis failed:", err));
 
     res.status(201).json({
       success: true,
       data: feedback,
       error: null,
-      message: 'Feedback submitted successfully'
+      message: "Feedback submitted successfully",
     });
   } catch (error: any) {
-    console.error('Error submitting feedback:', error);
+    console.error("Error submitting feedback:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to submit feedback'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to submit feedback",
     });
   }
 };
@@ -136,14 +137,14 @@ export const getAllFeedback = async (req: Request, res: Response) => {
 
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { ai_summary: { $regex: search, $options: 'i' } }
+        { title: { $regex: search, $options: "i" } },
+        { ai_summary: { $regex: search, $options: "i" } },
       ];
     }
 
     let sortOption: any = { createdAt: -1 }; // Default sort by newest
-    if (sort === 'priority') sortOption = { ai_priority: -1 };
-    if (sort === 'sentiment') sortOption = { ai_sentiment: 1 };
+    if (sort === "priority") sortOption = { ai_priority: -1 };
+    if (sort === "sentiment") sortOption = { ai_sentiment: 1 };
 
     const total = await Feedback.countDocuments(query);
     const feedback = await Feedback.find(query)
@@ -159,19 +160,19 @@ export const getAllFeedback = async (req: Request, res: Response) => {
           page,
           limit,
           total,
-          pages: Math.ceil(total / limit)
-        }
+          pages: Math.ceil(total / limit),
+        },
       },
       error: null,
-      message: 'Feedback retrieved successfully'
+      message: "Feedback retrieved successfully",
     });
   } catch (error: any) {
-    console.error('Error retrieving feedback:', error);
+    console.error("Error retrieving feedback:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to retrieve feedback'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to retrieve feedback",
     });
   }
 };
@@ -185,8 +186,8 @@ export const getFeedbackById = async (req: Request, res: Response) => {
       return res.status(404).json({
         success: false,
         data: null,
-        error: 'NOT_FOUND',
-        message: 'Feedback not found'
+        error: "NOT_FOUND",
+        message: "Feedback not found",
       });
     }
 
@@ -194,15 +195,15 @@ export const getFeedbackById = async (req: Request, res: Response) => {
       success: true,
       data: feedback,
       error: null,
-      message: 'Feedback retrieved successfully'
+      message: "Feedback retrieved successfully",
     });
   } catch (error: any) {
-    console.error('Error retrieving feedback:', error);
+    console.error("Error retrieving feedback:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to retrieve feedback'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to retrieve feedback",
     });
   }
 };
@@ -212,27 +213,27 @@ export const updateFeedbackStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!status || !['New', 'In Review', 'Resolved'].includes(status)) {
+    if (!status || !["New", "In Review", "Resolved"].includes(status)) {
       return res.status(400).json({
         success: false,
         data: null,
-        error: 'VALIDATION_ERROR',
-        message: 'Valid status required: New, In Review, or Resolved'
+        error: "VALIDATION_ERROR",
+        message: "Valid status required: New, In Review, or Resolved",
       });
     }
 
     const feedback = await Feedback.findByIdAndUpdate(
       id,
       { status },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!feedback) {
       return res.status(404).json({
         success: false,
         data: null,
-        error: 'NOT_FOUND',
-        message: 'Feedback not found'
+        error: "NOT_FOUND",
+        message: "Feedback not found",
       });
     }
 
@@ -240,15 +241,15 @@ export const updateFeedbackStatus = async (req: Request, res: Response) => {
       success: true,
       data: feedback,
       error: null,
-      message: 'Feedback status updated successfully'
+      message: "Feedback status updated successfully",
     });
   } catch (error: any) {
-    console.error('Error updating feedback:', error);
+    console.error("Error updating feedback:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to update feedback'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to update feedback",
     });
   }
 };
@@ -262,8 +263,8 @@ export const deleteFeedback = async (req: Request, res: Response) => {
       return res.status(404).json({
         success: false,
         data: null,
-        error: 'NOT_FOUND',
-        message: 'Feedback not found'
+        error: "NOT_FOUND",
+        message: "Feedback not found",
       });
     }
 
@@ -271,15 +272,15 @@ export const deleteFeedback = async (req: Request, res: Response) => {
       success: true,
       data: null,
       error: null,
-      message: 'Feedback deleted successfully'
+      message: "Feedback deleted successfully",
     });
   } catch (error: any) {
-    console.error('Error deleting feedback:', error);
+    console.error("Error deleting feedback:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to delete feedback'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to delete feedback",
     });
   }
 };
@@ -290,15 +291,15 @@ export const generateFeedbackSummary = async (req: Request, res: Response) => {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const feedback = await Feedback.find({
       createdAt: { $gte: sevenDaysAgo },
-      ai_processed: true
+      ai_processed: true,
     }).sort({ ai_priority: -1 });
 
     if (feedback.length === 0) {
       return res.status(200).json({
         success: true,
-        data: { summary: 'No feedback from the last 7 days' },
+        data: { summary: "No feedback from the last 7 days" },
         error: null,
-        message: 'Summary generated successfully'
+        message: "Summary generated successfully",
       });
     }
 
@@ -306,17 +307,17 @@ export const generateFeedbackSummary = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      data: { summary: summary || 'Unable to generate summary' },
+      data: { summary: summary || "Unable to generate summary" },
       error: null,
-      message: 'Summary generated successfully'
+      message: "Summary generated successfully",
     });
   } catch (error: any) {
-    console.error('Error generating summary:', error);
+    console.error("Error generating summary:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to generate summary'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to generate summary",
     });
   }
 };
@@ -324,22 +325,27 @@ export const generateFeedbackSummary = async (req: Request, res: Response) => {
 export const getStatsbar = async (req: Request, res: Response) => {
   try {
     const total = await Feedback.countDocuments();
-    const openItems = await Feedback.countDocuments({ status: 'New' });
+    const openItems = await Feedback.countDocuments({ status: "New" });
 
     const allFeedback = await Feedback.find();
-    const avgPriority = allFeedback.length > 0
-      ? (allFeedback.reduce((sum, f) => sum + (f.ai_priority || 0), 0) / allFeedback.length).toFixed(2)
-      : 0;
+    const avgPriority =
+      allFeedback.length > 0
+        ? (
+            allFeedback.reduce((sum, f) => sum + (f.ai_priority || 0), 0) /
+            allFeedback.length
+          ).toFixed(2)
+        : 0;
 
     // Most common tag
     const tagCounts = new Map<string, number>();
-    allFeedback.forEach(f => {
-      f.ai_tags?.forEach(tag => {
+    allFeedback.forEach((f) => {
+      f.ai_tags?.forEach((tag) => {
         tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
       });
     });
-    const mostCommonTag = Array.from(tagCounts.entries())
-      .sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+    const mostCommonTag =
+      Array.from(tagCounts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+      "N/A";
 
     res.status(200).json({
       success: true,
@@ -347,18 +353,18 @@ export const getStatsbar = async (req: Request, res: Response) => {
         totalFeedback: total,
         openItems,
         averagePriority: avgPriority,
-        mostCommonTag
+        mostCommonTag,
       },
       error: null,
-      message: 'Stats retrieved successfully'
+      message: "Stats retrieved successfully",
     });
   } catch (error: any) {
-    console.error('Error getting stats:', error);
+    console.error("Error getting stats:", error);
     res.status(500).json({
       success: false,
       data: null,
-      error: 'INTERNAL_SERVER_ERROR',
-      message: error.message || 'Failed to get stats'
+      error: "INTERNAL_SERVER_ERROR",
+      message: error.message || "Failed to get stats",
     });
   }
 };

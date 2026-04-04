@@ -1,31 +1,34 @@
-'use client';
+"use client";
 
-import { FormEvent, ChangeEvent, useState } from 'react';
-import apiClient from '@/lib/api';
+import { FormEvent, ChangeEvent, useState } from "react";
+import apiClient from "@/lib/api";
 
 export default function FeedbackForm() {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'Other',
-    submitterName: '',
-    submitterEmail: ''
+    title: "",
+    description: "",
+    category: "Other",
+    submitterName: "",
+    submitterEmail: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [charCount, setCharCount] = useState(0);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    if (name === 'description') {
+    if (name === "description") {
       setCharCount(value.length);
     }
   };
@@ -38,48 +41,57 @@ export default function FeedbackForm() {
     try {
       // Client-side validation
       if (!formData.title.trim()) {
-        setMessage({ type: 'error', text: 'Title is required' });
+        setMessage({ type: "error", text: "Title is required" });
         setLoading(false);
         return;
       }
 
       if (formData.title.trim().length < 5) {
-        setMessage({ type: 'error', text: 'Title must be at least 5 characters' });
+        setMessage({
+          type: "error",
+          text: "Title must be at least 5 characters",
+        });
         setLoading(false);
         return;
       }
 
       if (!formData.description.trim()) {
-        setMessage({ type: 'error', text: 'Description is required' });
+        setMessage({ type: "error", text: "Description is required" });
         setLoading(false);
         return;
       }
 
       if (formData.description.trim().length < 20) {
-        setMessage({ type: 'error', text: 'Description must be at least 20 characters' });
+        setMessage({
+          type: "error",
+          text: "Description must be at least 20 characters",
+        });
         setLoading(false);
         return;
       }
 
-      if (formData.submitterEmail && !formData.submitterEmail.includes('@')) {
-        setMessage({ type: 'error', text: 'Please enter a valid email address' });
+      if (formData.submitterEmail && !formData.submitterEmail.includes("@")) {
+        setMessage({
+          type: "error",
+          text: "Please enter a valid email address",
+        });
         setLoading(false);
         return;
       }
 
-      const response = await apiClient.post('/api/feedback', formData);
+      const response = await apiClient.post("/api/feedback", formData);
 
       if (response.data.success) {
         setMessage({
-          type: 'success',
-          text: 'Thank you! Your feedback has been submitted successfully.'
+          type: "success",
+          text: "Thank you! Your feedback has been submitted successfully.",
         });
         setFormData({
-          title: '',
-          description: '',
-          category: 'Other',
-          submitterName: '',
-          submitterEmail: ''
+          title: "",
+          description: "",
+          category: "Other",
+          submitterName: "",
+          submitterEmail: "",
         });
         setCharCount(0);
       }
@@ -87,24 +99,29 @@ export default function FeedbackForm() {
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
-        'Failed to submit feedback. Please try again.';
-      setMessage({ type: 'error', text: errorMessage });
+        "Failed to submit feedback. Please try again.";
+      setMessage({ type: "error", text: errorMessage });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"
+    >
       <h1 className="text-3xl font-bold mb-2">FeedPulse</h1>
-      <p className="text-gray-600 mb-6">Share your feedback to help us improve</p>
+      <p className="text-gray-600 mb-6">
+        Share your feedback to help us improve
+      </p>
 
       {message && (
         <div
           className={`mb-4 p-4 rounded-lg ${
-            message.type === 'success'
-              ? 'bg-green-50 text-green-800 border border-green-200'
-              : 'bg-red-50 text-red-800 border border-red-200'
+            message.type === "success"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -112,7 +129,10 @@ export default function FeedbackForm() {
       )}
 
       <div className="mb-6">
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Title *
         </label>
         <input
@@ -126,11 +146,16 @@ export default function FeedbackForm() {
           required
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
         />
-        <p className="text-xs text-gray-500 mt-1">{formData.title.length}/120</p>
+        <p className="text-xs text-gray-500 mt-1">
+          {formData.title.length}/120
+        </p>
       </div>
 
       <div className="mb-6">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Description * (min 20 characters)
         </label>
         <textarea
@@ -148,7 +173,10 @@ export default function FeedbackForm() {
       </div>
 
       <div className="mb-6">
-        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="category"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Category *
         </label>
         <select
@@ -167,7 +195,10 @@ export default function FeedbackForm() {
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label htmlFor="submitterName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="submitterName"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Name
           </label>
           <input
@@ -182,7 +213,10 @@ export default function FeedbackForm() {
         </div>
 
         <div>
-          <label htmlFor="submitterEmail" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="submitterEmail"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Email
           </label>
           <input
@@ -202,12 +236,12 @@ export default function FeedbackForm() {
         disabled={loading}
         className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
       >
-        {loading ? 'Submitting...' : 'Submit Feedback'}
+        {loading ? "Submitting..." : "Submit Feedback"}
       </button>
 
       <div className="mt-6 pt-6 border-t border-gray-200">
         <p className="text-sm text-gray-600">
-          Have an admin account?{' '}
+          Have an admin account?{" "}
           <a href="/dashboard" className="text-blue-600 hover:underline">
             View Dashboard
           </a>

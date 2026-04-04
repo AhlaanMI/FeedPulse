@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import apiClient from '@/lib/api';
+import { useState, useCallback, useEffect } from "react";
+import apiClient from "@/lib/api";
 
 interface Feedback {
   _id: string;
@@ -27,22 +27,22 @@ interface Stats {
 export default function Dashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
 
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [page, setPage] = useState(1);
-  const [category, setCategory] = useState('');
-  const [status, setStatus] = useState('');
-  const [sort, setSort] = useState('date');
-  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("date");
+  const [search, setSearch] = useState("");
   const [feedbackLoading, setFeedbackLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (token) {
       setIsAuthenticated(true);
       loadFeedback();
@@ -59,26 +59,27 @@ export default function Dashboard() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError('');
+    setLoginError("");
     setLoginLoading(true);
 
     try {
-      const response = await apiClient.post('/api/auth/login', {
+      const response = await apiClient.post("/api/auth/login", {
         email: loginEmail,
-        password: loginPassword
+        password: loginPassword,
       });
 
       if (response.data.success) {
-        localStorage.setItem('authToken', response.data.data.token);
+        localStorage.setItem("authToken", response.data.data.token);
         setIsAuthenticated(true);
-        setLoginEmail('');
-        setLoginPassword('');
+        setLoginEmail("");
+        setLoginPassword("");
         loadFeedback();
         loadStats();
       }
     } catch (error: any) {
       setLoginError(
-        error.response?.data?.message || 'Login failed. Please check your credentials.'
+        error.response?.data?.message ||
+          "Login failed. Please check your credentials.",
       );
     } finally {
       setLoginLoading(false);
@@ -89,19 +90,21 @@ export default function Dashboard() {
     setFeedbackLoading(true);
     try {
       const params = new URLSearchParams();
-      params.append('page', page.toString());
-      params.append('limit', '10');
-      if (category) params.append('category', category);
-      if (status) params.append('status', status);
-      if (sort) params.append('sort', sort);
-      if (search) params.append('search', search);
+      params.append("page", page.toString());
+      params.append("limit", "10");
+      if (category) params.append("category", category);
+      if (status) params.append("status", status);
+      if (sort) params.append("sort", sort);
+      if (search) params.append("search", search);
 
-      const response = await apiClient.get(`/api/feedback?${params.toString()}`);
+      const response = await apiClient.get(
+        `/api/feedback?${params.toString()}`,
+      );
       if (response.data.success) {
         setFeedback(response.data.data.feedback);
       }
     } catch (error) {
-      console.error('Failed to load feedback:', error);
+      console.error("Failed to load feedback:", error);
     } finally {
       setFeedbackLoading(false);
     }
@@ -109,33 +112,35 @@ export default function Dashboard() {
 
   const loadStats = async () => {
     try {
-      const response = await apiClient.get('/api/feedback/stats');
+      const response = await apiClient.get("/api/feedback/stats");
       if (response.data.success) {
         setStats(response.data.data);
       }
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      console.error("Failed to load stats:", error);
     }
   };
 
   const handleStatusUpdate = async (feedbackId: string, newStatus: string) => {
     try {
       const response = await apiClient.patch(`/api/feedback/${feedbackId}`, {
-        status: newStatus
+        status: newStatus,
       });
 
       if (response.data.success) {
-        setFeedback(prev =>
-          prev.map(f => (f._id === feedbackId ? { ...f, status: newStatus } : f))
+        setFeedback((prev) =>
+          prev.map((f) =>
+            f._id === feedbackId ? { ...f, status: newStatus } : f,
+          ),
         );
       }
     } catch (error) {
-      console.error('Failed to update status:', error);
+      console.error("Failed to update status:", error);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem("authToken");
     setIsAuthenticated(false);
     setFeedback([]);
     setStats(null);
@@ -143,30 +148,34 @@ export default function Dashboard() {
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
-      case 'Positive':
-        return 'bg-green-100 text-green-800';
-      case 'Negative':
-        return 'bg-red-100 text-red-800';
+      case "Positive":
+        return "bg-green-100 text-green-800";
+      case "Negative":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'New':
-        return 'bg-blue-100 text-blue-800';
-      case 'In Review':
-        return 'bg-purple-100 text-purple-800';
-      case 'Resolved':
-        return 'bg-green-100 text-green-800';
+      case "New":
+        return "bg-blue-100 text-blue-800";
+      case "In Review":
+        return "bg-purple-100 text-purple-800";
+      case "Resolved":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -185,14 +194,17 @@ export default function Dashboard() {
 
             <form onSubmit={handleLogin}>
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email
                 </label>
                 <input
                   type="email"
                   id="email"
                   value={loginEmail}
-                  onChange={e => setLoginEmail(e.target.value)}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="admin@feedpulse.com"
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -200,14 +212,17 @@ export default function Dashboard() {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <input
                   type="password"
                   id="password"
                   value={loginPassword}
-                  onChange={e => setLoginPassword(e.target.value)}
+                  onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -219,7 +234,7 @@ export default function Dashboard() {
                 disabled={loginLoading}
                 className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
               >
-                {loginLoading ? 'Logging in...' : 'Login'}
+                {loginLoading ? "Logging in..." : "Login"}
               </button>
             </form>
           </div>
@@ -249,19 +264,27 @@ export default function Dashboard() {
           <div className="grid grid-cols-4 gap-4 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <p className="text-gray-600 text-sm">Total Feedback</p>
-              <p className="text-3xl font-bold text-blue-600">{stats.totalFeedback}</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {stats.totalFeedback}
+              </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <p className="text-gray-600 text-sm">Open Items</p>
-              <p className="text-3xl font-bold text-yellow-600">{stats.openItems}</p>
+              <p className="text-3xl font-bold text-yellow-600">
+                {stats.openItems}
+              </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <p className="text-gray-600 text-sm">Avg Priority</p>
-              <p className="text-3xl font-bold text-purple-600">{stats.averagePriority}</p>
+              <p className="text-3xl font-bold text-purple-600">
+                {stats.averagePriority}
+              </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <p className="text-gray-600 text-sm">Most Common Tag</p>
-              <p className="text-2xl font-bold text-green-600">{stats.mostCommonTag}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {stats.mostCommonTag}
+              </p>
             </div>
           </div>
         )}
@@ -273,7 +296,7 @@ export default function Dashboard() {
               type="text"
               placeholder="Search feedback..."
               value={search}
-              onChange={e => {
+              onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
@@ -281,7 +304,7 @@ export default function Dashboard() {
             />
             <select
               value={category}
-              onChange={e => {
+              onChange={(e) => {
                 setCategory(e.target.value);
                 setPage(1);
               }}
@@ -295,7 +318,7 @@ export default function Dashboard() {
             </select>
             <select
               value={status}
-              onChange={e => {
+              onChange={(e) => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
@@ -308,7 +331,7 @@ export default function Dashboard() {
             </select>
             <select
               value={sort}
-              onChange={e => setSort(e.target.value)}
+              onChange={(e) => setSort(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="date">Newest First</option>
@@ -316,10 +339,10 @@ export default function Dashboard() {
             </select>
             <button
               onClick={() => {
-                setSearch('');
-                setCategory('');
-                setStatus('');
-                setSort('date');
+                setSearch("");
+                setCategory("");
+                setStatus("");
+                setSort("date");
                 setPage(1);
               }}
               className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
@@ -338,16 +361,22 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-4">
-            {feedback.map(item => (
+            {feedback.map((item) => (
               <div key={item._id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-800">{item.title}</h3>
-                    <p className="text-gray-600 text-sm mt-1">{item.description.substring(0, 100)}...</p>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {item.description.substring(0, 100)}...
+                    </p>
                   </div>
                   <select
                     value={item.status}
-                    onChange={e => handleStatusUpdate(item._id, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusUpdate(item._id, e.target.value)
+                    }
                     className={`px-3 py-1 rounded-full text-sm font-medium border-none cursor-pointer ${getStatusColor(item.status)}`}
                   >
                     <option value="New">New</option>
@@ -361,7 +390,9 @@ export default function Dashboard() {
                     {item.category}
                   </span>
                   {item.ai_sentiment && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getSentimentColor(item.ai_sentiment)}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getSentimentColor(item.ai_sentiment)}`}
+                    >
                       {item.ai_sentiment}
                     </span>
                   )}
@@ -373,9 +404,14 @@ export default function Dashboard() {
                 </div>
 
                 <div className="text-xs text-gray-500 mt-3 mb-3">
-                  {item.submitterName && <span>From: {item.submitterName}</span>}
+                  {item.submitterName && (
+                    <span>From: {item.submitterName}</span>
+                  )}
                   {item.submitterEmail && <span> • {item.submitterEmail}</span>}
-                  <span> • {new Date(item.createdAt).toLocaleDateString()}</span>
+                  <span>
+                    {" "}
+                    • {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
 
                 {item.ai_summary && (
