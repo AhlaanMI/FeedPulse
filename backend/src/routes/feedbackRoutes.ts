@@ -15,12 +15,16 @@ const router = Router();
 // Public routes
 router.post("/", submitFeedback);
 
-// Protected routes (require admin authentication)
-router.get("/", getAllFeedback);
+// Named routes BEFORE dynamic :id routes
 router.get("/stats", getStatsbar);
-router.get("/:id", getFeedbackById);
+router.get("/summary/generate", authenticateToken, generateFeedbackSummary);
+
+// Protected dynamic routes
 router.patch("/:id", authenticateToken, updateFeedbackStatus);
 router.delete("/:id", authenticateToken, deleteFeedback);
-router.get("/summary/generate", authenticateToken, generateFeedbackSummary);
+
+// Generic routes (lowest priority)
+router.get("/", getAllFeedback);
+router.get("/:id", getFeedbackById);
 
 export default router;

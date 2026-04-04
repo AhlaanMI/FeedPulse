@@ -123,19 +123,38 @@ export default function Dashboard() {
 
   const handleStatusUpdate = async (feedbackId: string, newStatus: string) => {
     try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Session expired. Please log in again.");
+        setIsAuthenticated(false);
+        return;
+      }
+
+      console.log("Updating status:", { feedbackId, newStatus, token: token.substring(0, 20) + "..." });
+
       const response = await apiClient.patch(`/api/feedback/${feedbackId}`, {
         status: newStatus,
       });
 
+      console.log("Status update response:", response.data);
+
       if (response.data.success) {
+        // Update the feedback in state
         setFeedback((prev) =>
           prev.map((f) =>
             f._id === feedbackId ? { ...f, status: newStatus } : f,
           ),
         );
+        // Refresh stats
+        loadStats();
+        alert("Status updated successfully!");
+      } else {
+        alert("Failed to update: " + (response.data.message || "Unknown error"));
       }
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch (error: any) {
+      console.error("Status update error:", error);
+      const msg = error.response?.data?.message || error.message || "Failed to update status";
+      alert("Error: " + msg);
     }
   };
 
