@@ -1,0 +1,12 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="180" height="180" rx="40" fill="#1e293b"/>
+
+  <!-- Speech bubble -->
+  <path d="M50 45H130C137.732 45 144 51.2681 144 59V110C144 117.732 137.732 124 130 124H70L40 154V59C40 51.2681 46.2681 45 54 45Z" fill="#ffffff"/>
+
+  <!-- Pulse effect lines -->
+  <circle cx="60" cy="85" r="8" fill="#1e293b"/>
+  <circle cx="90" cy="85" r="8" fill="#1e293b"/>
+  <circle cx="120" cy="85" r="8" fill="#1e293b"/>
+</svg>

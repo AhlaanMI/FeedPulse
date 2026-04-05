@@ -1,0 +1,36 @@
+{
+  "name": "FeedPulse - AI-Powered Feedback Platform",
+  "short_name": "FeedPulse",
+  "description": "Collect, analyze, and prioritize product feedback with AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e293b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-256.svg",
+      "sizes": "256x256",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "screenshots": [
+    {
+      "src": "/icon-256.svg",
+      "sizes": "256x256",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}

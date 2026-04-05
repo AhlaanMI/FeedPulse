@@ -1,0 +1,26 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background with depth -->
+  <rect width="256" height="256" rx="56" fill="url(#grad)"/>
+
+  <!-- Shadow effect -->
+  <rect width="256" height="256" rx="56" fill="#000" opacity="0.1"/>
+
+  <!-- Speech bubble card -->
+  <path d="M65 60H191C202.046 60 211 68.9543 211 80V145C211 156.046 202.046 165 191 165H95L55 210V80C55 68.9543 63.9543 60 75 60Z" fill="#ffffff" filter="drop-shadow(0 4px 12px rgba(0,0,0,0.15))"/>
+
+  <!-- Typing indicator dots -->
+  <circle cx="80" cy="110" r="10" fill="#1e293b" opacity="0.8"/>
+  <circle cx="125" cy="110" r="10" fill="#1e293b" opacity="0.8"/>
+  <circle cx="170" cy="110" r="10" fill="#1e293b" opacity="0.8"/>
+
+  <!-- Accent line -->
+  <line x1="65" y1="155" x2="191" y2="155" stroke="#94a3b8" stroke-width="2" opacity="0.3"/>
+</svg>
