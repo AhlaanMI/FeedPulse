@@ -8,6 +8,11 @@ import { User } from "./models/User";
 
 dotenv.config();
 
+console.log(
+  "GEMINI_API_KEY loaded:",
+  Boolean(process.env.GEMINI_API_KEY),
+);
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 const MONGO_URI =
