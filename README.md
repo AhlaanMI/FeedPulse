@@ -338,28 +338,7 @@ If given more time, the following features would be implemented:
    - Bulk export to CSV
    - Retrigger AI analysis on multiple items
 
-## Deployment
 
-### Heroku Deployment
-
-```bash
-# Create apps
-heroku create feedpulse-frontend
-heroku create feedpulse-backend
-
-# Set environment variables
-heroku config:set GEMINI_API_KEY=xxx --app feedpulse-backend
-
-# Deploy
-git push heroku main
-```
-
-### AWS Deployment
-
-- Frontend: AWS Amplify or CloudFront + S3
-- Backend: AWS EC2 or ECS
-- Database: AWS RDS for MongoDB or native MongoDB Atlas
-- AI API: Google Cloud (Gemini)
 
 ## Troubleshooting
 
