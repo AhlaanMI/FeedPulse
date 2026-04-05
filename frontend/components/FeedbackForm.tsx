@@ -39,7 +39,6 @@ export default function FeedbackForm() {
     setMessage(null);
 
     try {
-      // Client-side validation
       if (!formData.title.trim()) {
         setMessage({ type: "error", text: "Title is required" });
         setLoading(false);
@@ -84,7 +83,7 @@ export default function FeedbackForm() {
       if (response.data.success) {
         setMessage({
           type: "success",
-          text: "Thank you! Your feedback has been submitted successfully.",
+          text: "Thank you! Your feedback has been received and will be reviewed shortly.",
         });
         setFormData({
           title: "",
@@ -107,146 +106,189 @@ export default function FeedbackForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8"
-    >
-      <h1 className="text-3xl font-bold mb-2">FeedPulse</h1>
-      <p className="text-gray-600 mb-6">
-        Share your feedback to help us improve
-      </p>
-
-      {message && (
-        <div
-          className={`mb-4 p-4 rounded-lg ${
-            message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {message.text}
+    <div className="w-full">
+      {/* Hero Header */}
+      <div className="text-center mb-16">
+        <div className="inline-block mb-4">
+          <div className="h-20 w-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 rounded-2xl flex items-center justify-center shadow-2xl">
+            <span className="text-4xl">💬</span>
+          </div>
         </div>
-      )}
-
-      <div className="mb-6">
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Title *
-        </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="Brief title of your feedback"
-          maxLength={120}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          {formData.title.length}/120
+        <h1 className="text-6xl font-bold text-slate-900 mb-3 tracking-tight">
+          FeedPulse
+        </h1>
+        <p className="text-xl text-slate-600 font-light max-w-xl mx-auto">
+          Your voice shapes our future. Share your insights and help us build products you'll love.
         </p>
       </div>
 
-      <div className="mb-6">
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Description * (min 20 characters)
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="Please provide detailed feedback..."
-          minLength={20}
-          rows={5}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        />
-        <p className="text-xs text-gray-500 mt-1">{charCount}/∞ characters</p>
-      </div>
-
-      <div className="mb-6">
-        <label
-          htmlFor="category"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Category *
-        </label>
-        <select
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        >
-          <option value="Bug">Bug</option>
-          <option value="Feature Request">Feature Request</option>
-          <option value="Improvement">Improvement</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div>
-          <label
-            htmlFor="submitterName"
-            className="block text-sm font-medium text-gray-700 mb-2"
+      {/* Main Form Card */}
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-12 backdrop-blur-xl border border-slate-100"
+      >
+        {/* Alert Messages */}
+        {message && (
+          <div
+            className={`mb-8 p-5 rounded-2xl border transition-all duration-300 ${
+              message.type === "success"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                : "bg-red-50 border-red-200 text-red-900"
+            }`}
           >
-            Name
+            <p className="font-semibold text-lg flex items-center gap-3">
+              <span className="text-2xl">
+                {message.type === "success" ? "✓" : "✕"}
+              </span>
+              {message.text}
+            </p>
+          </div>
+        )}
+
+        {/* Title Field */}
+        <div className="mb-10">
+          <label
+            htmlFor="title"
+            className="text-sm font-semibold text-slate-900 mb-3 block uppercase tracking-wider"
+          >
+            Feedback Title <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            id="submitterName"
-            name="submitterName"
-            value={formData.submitterName}
+            id="title"
+            name="title"
+            value={formData.title}
             onChange={handleChange}
-            placeholder="Your name (optional)"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            placeholder="What's on your mind?"
+            maxLength={120}
+            required
+            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 outline-none transition-all placeholder-slate-400 text-slate-900 font-medium"
           />
+          <div className="flex justify-between mt-3">
+            <p className="text-xs text-slate-600 font-medium">Be specific and concise</p>
+            <p className={`text-xs font-bold ${formData.title.length > 100 ? 'text-red-600' : 'text-slate-500'}`}>
+              {formData.title.length}/120
+            </p>
+          </div>
         </div>
 
-        <div>
+        {/* Description Field */}
+        <div className="mb-10">
           <label
-            htmlFor="submitterEmail"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            htmlFor="description"
+            className="text-sm font-semibold text-slate-900 mb-3 block uppercase tracking-wider"
           >
-            Email
+            Description <span className="text-red-500">*</span>
+            <span className="font-normal text-slate-600 normal-case ml-2">(minimum 20 characters)</span>
           </label>
-          <input
-            type="email"
-            id="submitterEmail"
-            name="submitterEmail"
-            value={formData.submitterEmail}
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
             onChange={handleChange}
-            placeholder="your@email.com (optional)"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            placeholder="Share the context and details of your feedback..."
+            minLength={20}
+            rows={6}
+            required
+            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 outline-none transition-all resize-none placeholder-slate-400 text-slate-900 font-medium"
           />
+          <div className="flex justify-between mt-3">
+            <p className="text-xs text-slate-600 font-medium">Include relevant context and examples</p>
+            <p className={`text-xs font-bold ${charCount < 20 ? 'text-red-600' : charCount > 500 ? 'text-amber-600' : 'text-slate-500'}`}>
+              {charCount} characters
+            </p>
+          </div>
         </div>
-      </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
-      >
-        {loading ? "Submitting..." : "Submit Feedback"}
-      </button>
+        {/* Category Field */}
+        <div className="mb-10">
+          <label
+            htmlFor="category"
+            className="text-sm font-semibold text-slate-900 mb-3 block uppercase tracking-wider"
+          >
+            Category <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 outline-none transition-all text-slate-900 font-medium appearance-none cursor-pointer"
+          >
+            <option value="Bug">🐛 Bug Report</option>
+            <option value="Feature Request">⭐ Feature Request</option>
+            <option value="Improvement">🚀 Improvement</option>
+            <option value="Other">💭 Other</option>
+          </select>
+        </div>
 
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <p className="text-sm text-gray-600">
-          Have an admin account?{" "}
-          <a href="/dashboard" className="text-blue-600 hover:underline">
-            View Dashboard
-          </a>
-        </p>
-      </div>
-    </form>
+        {/* Name & Email Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div>
+            <label
+              htmlFor="submitterName"
+              className="text-sm font-semibold text-slate-900 mb-3 block uppercase tracking-wider"
+            >
+              Full Name <span className="text-slate-500 font-normal">(optional)</span>
+            </label>
+            <input
+              type="text"
+              id="submitterName"
+              name="submitterName"
+              value={formData.submitterName}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 outline-none transition-all placeholder-slate-400 text-slate-900 font-medium"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="submitterEmail"
+              className="text-sm font-semibold text-slate-900 mb-3 block uppercase tracking-wider"
+            >
+              Email Address <span className="text-slate-500 font-normal">(optional)</span>
+            </label>
+            <input
+              type="email"
+              id="submitterEmail"
+              name="submitterEmail"
+              value={formData.submitterEmail}
+              onChange={handleChange}
+              placeholder="your@email.com"
+              className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-900/10 outline-none transition-all placeholder-slate-400 text-slate-900 font-medium"
+            />
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold py-4 px-8 rounded-xl hover:shadow-2xl hover:from-slate-800 hover:to-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-lg hover:scale-105 transform"
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-3">
+              <span className="animate-spin">⏳</span> Submitting...
+            </span>
+          ) : (
+            "Submit Feedback"
+          )}
+        </button>
+
+        {/* Footer */}
+        <div className="mt-10 pt-10 border-t border-slate-200 text-center">
+          <p className="text-slate-600 font-medium">
+            Team member?{" "}
+            <a
+              href="/dashboard"
+              className="text-slate-900 font-bold hover:text-slate-700 transition-colors relative inline-block after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-slate-900 after:transition-all hover:after:w-full"
+            >
+              Access Dashboard
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
