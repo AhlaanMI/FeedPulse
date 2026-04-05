@@ -1,4 +1,6 @@
 # FeedPulse — AI-Powered Product Feedback Platform
+<img width="1366" height="1042" alt="screencapture-localhost-3000-dashboard-2026-04-05-14_32_55" src="https://github.com/user-attachments/assets/b64f4a34-4691-4596-ae91-94987e85b0cd" />
+<img width="1366" height="1132" alt="screencapture-localhost-3000-2026-04-05-14_33_21" src="https://github.com/user-attachments/assets/4895b258-fb82-4e3b-a970-68759a05798f" />
 
 An intelligent feedback collection and analysis platform that uses Google Gemini AI to automatically categorize, prioritize, and summarize product feedback.
 
