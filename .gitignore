@@ -2,6 +2,7 @@ node_modules
 .env
 .env.local
 .env.*.local
+backend/gold-pier-450111-f6-f23dfad6ab72.json
 dist
 build
 .next

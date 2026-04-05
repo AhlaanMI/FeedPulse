@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 interface GeminiAnalysisResult {
   category: "Bug" | "Feature Request" | "Improvement" | "Other";
@@ -8,78 +8,94 @@ interface GeminiAnalysisResult {
   tags: string[];
 }
 
-const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const getClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+
+  return new GoogleGenAI({ apiKey, apiVersion: "v1" });
+};
+
+const DEFAULT_MODELS_TO_TRY = [
+  process.env.GEMINI_MODEL,
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-001",
+  "models/gemini-2.0-flash",
+].filter(Boolean) as string[];
+
+async function generateWithFallback(
+  ai: GoogleGenAI,
+  contents: string,
+): Promise<string> {
+  let lastError: unknown;
+
+  for (const model of DEFAULT_MODELS_TO_TRY) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+      });
+
+      return response.text?.trim() || "";
+    } catch (error: any) {
+      lastError = error;
+      const status = error?.status;
+      const message: string | undefined = error?.message;
+
+      // If the model isn't found/supported, try the next known-good model ID.
+      if (status === 404 || message?.includes("not found")) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError;
+}
 
 export async function analyzeWithGemini(
   title: string,
   description: string,
 ): Promise<GeminiAnalysisResult | null> {
   try {
-    if (!process.env.GEMINI_API_KEY) {
-      console.warn("GEMINI_API_KEY not set, skipping AI analysis");
+    const ai = getClient();
+    if (!ai) {
+      console.warn("GEMINI_API_KEY not set");
       return null;
     }
 
-    const model = client.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `Analyse this product feedback and return ONLY valid JSON with no markdown formatting, no code blocks, just the raw JSON object. The feedback is:
+    const prompt = `Analyse this product feedback and return ONLY valid JSON:
 
 Title: ${title}
 Description: ${description}
 
-Return ONLY a JSON object with these fields:
+Return JSON:
 {
   "category": "Bug" | "Feature Request" | "Improvement" | "Other",
   "sentiment": "Positive" | "Neutral" | "Negative",
-  "priority_score": number between 1 and 10,
-  "summary": "Brief summary of the feedback",
-  "tags": ["tag1", "tag2", "tag3"]
-}
+  "priority_score": number (1-10),
+  "summary": "Brief summary",
+  "tags": ["tag1", "tag2"]
+}`;
 
-Respond with ONLY the JSON object, no additional text.`;
+    let text = await generateWithFallback(ai, prompt);
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    // Remove markdown if exists
+    text = text.replace(/```json|```/g, "").trim();
 
-    // Parse the JSON response - try to extract JSON if wrapped in markdown
-    let jsonStr = text.trim();
-
-    // Remove markdown code blocks if present
-    if (jsonStr.includes("```json")) {
-      jsonStr = jsonStr.replace(/```json\n?|\n?```/g, "");
-    } else if (jsonStr.includes("```")) {
-      jsonStr = jsonStr.replace(/```\n?|\n?```/g, "");
-    }
-
-    const analysis = JSON.parse(jsonStr.trim());
-
-    // Validate the response structure
-    if (
-      !analysis.category ||
-      !analysis.sentiment ||
-      typeof analysis.priority_score !== "number" ||
-      !analysis.summary ||
-      !Array.isArray(analysis.tags)
-    ) {
-      console.error("Invalid Gemini response structure:", analysis);
-      return null;
-    }
-
-    // Ensure priority_score is between 1-10
-    const priority = Math.max(
-      1,
-      Math.min(10, Math.round(analysis.priority_score)),
-    );
+    const data = JSON.parse(text);
 
     return {
-      category: analysis.category,
-      sentiment: analysis.sentiment,
-      priority_score: priority,
-      summary: analysis.summary,
-      tags: analysis.tags.slice(0, 5), // Limit to 5 tags
+      category: data.category,
+      sentiment: data.sentiment,
+      priority_score: Math.max(1, Math.min(10, data.priority_score)),
+      summary: data.summary,
+      tags: (data.tags || []).slice(0, 5),
     };
   } catch (error) {
-    console.error("Error analyzing feedback with Gemini:", error);
+    console.error("Gemini analyze error:", error);
     return null;
   }
 }
@@ -88,26 +104,26 @@ export async function generateSummary(
   feedbackItems: any[],
 ): Promise<string | null> {
   try {
-    if (!process.env.GEMINI_API_KEY || feedbackItems.length === 0) {
+    const ai = getClient();
+    if (!ai || feedbackItems.length === 0) {
       return null;
     }
-
-    const model = client.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const feedbackSummary = feedbackItems
       .map((item, i) => `${i + 1}. ${item.ai_summary || item.title}`)
       .join("\n");
 
-    const prompt = `Based on these product feedback items from the last 7 days, identify the top 3 themes or patterns and provide insights:
+    const prompt = `Analyze these feedback items and give top 3 insights:
 
 ${feedbackSummary}
 
-Provide a concise summary of the top 3 themes in bullet points.`;
+Return short bullet points.`;
 
-    const result = await model.generateContent(prompt);
-    return result.response.text();
+    const text = await generateWithFallback(ai, prompt);
+    return text || null;
   } catch (error) {
-    console.error("Error generating summary with Gemini:", error);
+    console.error("Gemini summary error:", error);
     return null;
   }
 }
+
